@@ -48,9 +48,14 @@ ggplot(M1G, aes(x = years, y = value, group = type,linetype = type)) +
         legend.key.size = unit(20,"pt"))
 
 M1G<-spread(M1G,key=type,value = value,1)
-ggplot(data = M1G, aes(x = GDP, y = M1)) + geom_point()
-model<-lm(M1~GDP,data = M1G)
-ggplot(data = M1G, aes(x = GDP, y = M1)) + geom_point()+geom_smooth(method = 'lm')
+ggplot(data = M1G, aes(x = M1, y = GDP)) + 
+  geom_point()+theme(axis.text=element_text(size=13),
+                     axis.title=element_text(size=25,face="bold"))
+model<-lm(GDP~M1,data = M1G)
+ggplot(data = M1G, aes(x = M1, y = GDP)) + 
+  geom_point()+theme(axis.text=element_text(size=13),
+                     axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
 
 
 
