@@ -130,8 +130,39 @@ ggplot(data = M2G, aes(x = log(M2), y = GDP)) +
 ### CPI,M2 and GDP 
 
 ##求各自变化率后另外储存
+data0<-data.frame(years=unique(data1$years)[-1],M2=NA,GDP=NA,CPI=NA)
+for(i in 1:20){
+  t1 <- data1[which(data1$type == "M2" & data1$years == 2000+i),3] 
+  t2 <- data1[which(data1$type == "M2" & data1$years == 2000+i-1),3]
+  t3 <- (t1-t2)/t2*100
+  data0[i,2]<-t3
+}
+for(i in 1:20){
+  t1 <- data1[which(data1$type == "GDP" & data1$years == 2000+i),3] 
+  t2 <- data1[which(data1$type == "GDP" & data1$years == 2000+i-1),3]
+  t3 <- (t1-t2)/t2*100
+  data0[i,3]<-t3
+}
+for(i in 1:20){
+  t1 <- data1[which(data1$type == "CPI" & data1$years == 2000+i),3] 
+  t2 <- data1[which(data1$type == "CPI" & data1$years == 2000+i-1),3]
+  t3 <- (t1-t2)/t2*100
+  data0[i,4]<-t3
+}
+data0.1<-gather(data0,type,value,2:4)
+ggplot(data0.1, aes(x = years, y = value, group = type,linetype = type)) +
+  geom_line(key_glyph = "timeseries",size = 1) + geom_point(size = 4) +
+  theme(axis.text=element_text(size=15,face="bold"),axis.title=element_text(size=25,face="bold"),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=23),
+        legend.key.size = unit(20,"pt"))
 
 
+model <- lm(CPI~GDP+M2, data = data0)
+ggplot(data = data0, aes(x = M2, y = CPI)) + 
+  geom_point()+theme(axis.text=element_text(size=13),
+                     axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
 
 
 
