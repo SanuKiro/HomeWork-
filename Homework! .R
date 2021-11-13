@@ -12,6 +12,83 @@ ggplot(data1, aes(x = years, y = value, group = type,linetype = type)) +
   legend.title = element_text(size=23),
   legend.key.size = unit(20,"pt"))
   
+##外汇与M0
+M0F<-data.frame(data1[which(data1$type=="M0"|
+                              data1$type=="Foreign exchange reserves"),])
+ggplot(M0F, aes(x = years, y = value, group = type,linetype = type)) +
+  geom_line() + geom_point()
+M0F<-spread(M0F,key=type,value = value,1)
+M0F<-rename(M0F,"FER"="Foreign exchange reserves")
+ggplot(data = M0F, aes(x =  FER, y = M0)) + geom_point()
+model<-lm(M0~Fer,data = M0F)
+ggplot(data = M0F, aes(x =  FER, y = M0)) + geom_point()+geom_smooth(method = 'lm')
+
+
+
+
+
+##外汇与M1
+M1F<-data.frame(data1[which(data1$type=="M1"|
+                              data1$type=="Foreign exchange reserves"),])
+ggplot(M1F, aes(x = years, y = value, group = type,linetype = type)) +
+  geom_line() + geom_point()
+M1F<-spread(M1F,key=type,value = value,1)
+M1F<-rename(M1F,"FER"="Foreign exchange reserves")
+ggplot(data = M1F, aes(x =  FER, y = M1)) + geom_point()
+model<-lm(Fer~M1,data = M1F)
+ggplot(data = M1F, aes(x = FER, y = M1)) + geom_point()+geom_smooth(method = 'lm')+
+  theme(axis.text=element_text(size=30),
+        axis.title=element_text(size=30,face="bold"))
+
+
+##外汇与M2
+M2F<-data.frame(data1[which(data1$type=="M2"|
+                              data1$type=="Foreign exchange reserves"),])
+ggplot(M2F, aes(x = years, y = value, group = type,linetype = type)) +
+  geom_line() + geom_point()
+M2F<-spread(M2F,key=type,value = value,1)
+M2F<-rename(M2F,"FER"="Foreign exchange reserves")
+ggplot(data = M2F, aes(x =  FER, y = M2)) + geom_point()
+model<-lm(Fer~M2,data = M2F)
+ggplot(data = M2F, aes(x =  FER, y = M2)) + geom_point()+geom_smooth(method = 'lm')+
+  theme(axis.text=element_text(size=30),
+        axis.title=element_text(size=30,face="bold"))
+
+
+##FER与(M1-M0)和(M2-M1)
+FM012<-data.frame(years=unique(data1$years),Y=NA,X=NA,M0=NA,FER=NA)
+                                            ## Y 即M2-M1, X 即M1-M0
+##往数据框内输入Y 
+for(i in 0:20){
+  t1 <- data1[which(data1$type == "M2" & data1$years == 2000+i),3] 
+  t2 <- data1[which(data1$type == "M1" & data1$years == 2000+i),3]
+  t3 <- t1-t2
+  FM012[i+1,2]<-t3
+}
+##往数据框内输入X 
+for(i in 0:20){
+  t1 <- data1[which(data1$type == "M1" & data1$years == 2000+i),3] 
+  t2 <- data1[which(data1$type == "M0" & data1$years == 2000+i),3]
+  t3 <- t1-t2
+  FM012[i+1,3]<-t3
+}
+##往数据框内输入M0
+for(i in 0:20){
+  t <- data1[which(data1$type == "M0" & data1$years == 2000+i),3] 
+  FM012[i+1,4]<-t
+}
+##往数据框内输入FER
+for(i in 0:20){
+  t <- data1[which(data1$type == "Foreign exchange reserves" & data1$years == 2000+i),3] 
+  FM012[i+1,5]<-t
+}
+modelX <- lm(FER~X+Y+M0, data = FM012 )
+
+
+
+
+
+
 
 ##GDP与M0
 M0G<-data.frame(data1[which(data1$type=="M0"|
@@ -158,15 +235,35 @@ ggplot(data0.1, aes(x = years, y = value, group = type,linetype = type)) +
         legend.key.size = unit(20,"pt"))
 
 
-model <- lm(CPI~GDP+M2, data = data0)
+model1 <- lm(CPI~GDP+M2, data = data0)
 ggplot(data = data0, aes(x = M2, y = CPI)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
+ggplot(data = data0, aes(x = GDP, y = CPI)) + 
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
+                             axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
 
+model2 <- lm(M2~CPI+GDP, data = data0)
+ggplot(data = data0, aes(x = M2, y = CPI)) + 
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
+                             axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
+ggplot(data = data0, aes(x = GDP, y = CPI)) + 
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
+                             axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
 
-
-
+model3 <- lm(GDP~M2+CPI, data = data0)
+ggplot(data = data0, aes(x = M2, y = CPI)) + 
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
+                             axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
+ggplot(data = data0, aes(x = GDP, y = CPI)) + 
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
+                             axis.title=element_text(size=25,face="bold"))+
+  geom_smooth(method = 'lm')
 
 
 
