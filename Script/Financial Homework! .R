@@ -6,23 +6,42 @@ Data <- read_csv("~/Documents/R Project/For Project/Homework-/Data.csv")
 data1<-gather(Data,years,value,-1)
 data1$years<-factor(data1$years)
 ggplot(data1, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line(key_glyph = "timeseries") + geom_point() + theme(axis.text=element_text(size=13),
+  geom_line(key_glyph = "timeseries",size = 1) + geom_point(size = 4) + 
+  theme(axis.text=element_text(size=13),
   axis.title=element_text(size=25,face="bold"),
   legend.text = element_text(size=20),
   legend.title = element_text(size=23),
   legend.key.size = unit(20,"pt"))
+
+###中国外汇储备变化与货币供应量（M0, M1, M2) 变动的关系
   
 ##外汇与M0
 M0F<-data.frame(data1[which(data1$type=="M0"|
                               data1$type=="Foreign exchange reserves"),])
 ggplot(M0F, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line() + geom_point()
+  geom_line(size = 1) + geom_point(size = 4)+ theme(axis.text=element_text(size=13),
+                                                    axis.title=element_text(size=25,face="bold"),
+                                                    legend.text = element_text(size=20),
+                                                    legend.title = element_text(size=23),
+                                                    legend.key.size = unit(20,"pt"))
 M0F<-spread(M0F,key=type,value = value,1)
 M0F<-rename(M0F,"FER"="Foreign exchange reserves")
 ggplot(data = M0F, aes(x =  FER, y = M0)) + geom_point()
-model<-lm(M0~Fer,data = M0F)
-ggplot(data = M0F, aes(x =  FER, y = M0)) + geom_point()+geom_smooth(method = 'lm')
 
+#建模，回归分析
+model<-lm(FER~M0,data = M0F)
+ggplot(data = M0F, aes(x =  M0, y = FER)) +  
+  geom_point(size = 4)+
+  geom_smooth(method = 'lm')+
+theme(axis.text=element_text(size=30),
+      axis.title=element_text(size=30,face="bold"))
+#随后自变量交换
+model<-lm(M0~FER,data = M0F)
+ggplot(data = M0F, aes(x =  FER, y = M0)) +  
+  geom_point(size = 4)+
+  geom_smooth(method = 'lm')+
+theme(axis.text=element_text(size=30),
+      axis.title=element_text(size=30,face="bold"))
 
 
 
@@ -31,12 +50,16 @@ ggplot(data = M0F, aes(x =  FER, y = M0)) + geom_point()+geom_smooth(method = 'l
 M1F<-data.frame(data1[which(data1$type=="M1"|
                               data1$type=="Foreign exchange reserves"),])
 ggplot(M1F, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line() + geom_point()
+  geom_line(size = 1) + geom_point(size = 4)+ theme(axis.text=element_text(size=13),
+                                                    axis.title=element_text(size=25,face="bold"),
+                                                    legend.text = element_text(size=20),
+                                                    legend.title = element_text(size=23),
+                                                    legend.key.size = unit(20,"pt"))
 M1F<-spread(M1F,key=type,value = value,1)
 M1F<-rename(M1F,"FER"="Foreign exchange reserves")
 ggplot(data = M1F, aes(x =  FER, y = M1)) + geom_point()
 model<-lm(Fer~M1,data = M1F)
-ggplot(data = M1F, aes(x = FER, y = M1)) + geom_point()+geom_smooth(method = 'lm')+
+ggplot(data = M1F, aes(x = FER, y = M1)) + geom_point(size = 4)+geom_smooth(method = 'lm')+
   theme(axis.text=element_text(size=30),
         axis.title=element_text(size=30,face="bold"))
 
@@ -45,12 +68,16 @@ ggplot(data = M1F, aes(x = FER, y = M1)) + geom_point()+geom_smooth(method = 'lm
 M2F<-data.frame(data1[which(data1$type=="M2"|
                               data1$type=="Foreign exchange reserves"),])
 ggplot(M2F, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line() + geom_point()
+  geom_line(size = 1) + geom_point(size = 4)+ theme(axis.text=element_text(size=13),
+                                                    axis.title=element_text(size=25,face="bold"),
+                                                    legend.text = element_text(size=20),
+                                                    legend.title = element_text(size=23),
+                                                    legend.key.size = unit(20,"pt"))
 M2F<-spread(M2F,key=type,value = value,1)
 M2F<-rename(M2F,"FER"="Foreign exchange reserves")
 ggplot(data = M2F, aes(x =  FER, y = M2)) + geom_point()
 model<-lm(Fer~M2,data = M2F)
-ggplot(data = M2F, aes(x =  FER, y = M2)) + geom_point()+geom_smooth(method = 'lm')+
+ggplot(data = M2F, aes(x =  FER, y = M2)) + geom_point(size = 4)+geom_smooth(method = 'lm')+
   theme(axis.text=element_text(size=30),
         axis.title=element_text(size=30,face="bold"))
 
@@ -83,18 +110,18 @@ for(i in 0:20){
   FM012[i+1,5]<-t
 }
 modelX <- lm(FER~X+Y+M0, data = FM012 )
+summary(modelX)
 
 
 
-
-
+###中国国内生产总值与货币供应量（M0, M1, M2) 变动的关系
 
 
 ##GDP与M0
 M0G<-data.frame(data1[which(data1$type=="M0"|
                               data1$type=="GDP"),])
 ggplot(M0G, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line(key_glyph = "timeseries") + geom_point() + 
+  geom_line(key_glyph = "timeseries",size = 1) + geom_point(size = 4) + 
   theme(axis.text=element_text(size=13),axis.title=element_text(size=25,face="bold"),
    legend.text = element_text(size=20),
    legend.title = element_text(size=23),
@@ -102,17 +129,17 @@ ggplot(M0G, aes(x = years, y = value, group = type,linetype = type)) +
 
 M0G<-spread(M0G,key=type,value = value,1)
 ggplot(data = M0G, aes(x = M0, y = GDP)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))
 model<-lm(GDP~M0,data = M0G)
 ggplot(data = M0G, aes(x = M0, y = GDP)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                    axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
 model<-lm(GDP~log(M0),data = M0G)
 ggplot(data = M0G, aes(x = M0, y = log(GDP))) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
@@ -129,7 +156,7 @@ ggplot(data = M0G, aes(x = M0, y = log(GDP))) +
 M1G<-data.frame(data1[which(data1$type=="M1"|
                               data1$type=="GDP"),])
 ggplot(M1G, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line(key_glyph = "timeseries") + geom_point() + 
+  geom_line(key_glyph = "timeseries",size = 1) + geom_point(size = 4) + 
   theme(axis.text=element_text(size=13),axis.title=element_text(size=25,face="bold"),
         legend.text = element_text(size=20),
         legend.title = element_text(size=23),
@@ -137,23 +164,23 @@ ggplot(M1G, aes(x = years, y = value, group = type,linetype = type)) +
 
 M1G<-spread(M1G,key=type,value = value,1)
 ggplot(data = M1G, aes(x = M1, y = GDP)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))
 model1<-lm(GDP~M1,data = M1G)
 ggplot(data = M1G, aes(x = M1, y = GDP)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
 model2<-lm(M1~GDP,data = M1G)
 ggplot(data = M1G, aes(x = GDP, y = M1)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
 model3<-lm(log(GDP)~M1,data = M1G)
 ggplot(data = M1G, aes(x = M1, y = log(GDP))) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
@@ -169,7 +196,7 @@ ggplot(data = M1G, aes(x = log(M1), y = GDP)) +
 M2G<-data.frame(data1[which(data1$type=="M2"|
                               data1$type=="GDP"),])
 ggplot(M2G, aes(x = years, y = value, group = type,linetype = type)) +
-  geom_line(key_glyph = "timeseries") + geom_point() + 
+  geom_line(key_glyph = "timeseries",size = 1) + geom_point(size = 4) + 
   theme(axis.text=element_text(size=13),axis.title=element_text(size=25,face="bold"),
         legend.text = element_text(size=20),
         legend.title = element_text(size=23),
@@ -181,13 +208,13 @@ ggplot(data = M2G, aes(x = M2, y = GDP)) +
                      axis.title=element_text(size=25,face="bold"))
 model1<-lm(GDP~M2,data = M2G)
 ggplot(data = M2G, aes(x = M2, y = GDP)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
 model2<-lm(M2~GDP,data = M2G)
 ggplot(data = M2G, aes(x = GDP, y = M2)) + 
-  geom_point()+theme(axis.text=element_text(size=13),
+  geom_point(size = 4)+theme(axis.text=element_text(size=13),
                      axis.title=element_text(size=25,face="bold"))+
   geom_smooth(method = 'lm')
 
